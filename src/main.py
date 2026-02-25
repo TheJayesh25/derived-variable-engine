@@ -5,6 +5,8 @@ from datetime import datetime
 import pandas as pd
 import yaml
 from engine import apply_derived_variables
+from scale_validation import validate_dataset
+
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
@@ -22,6 +24,15 @@ def run():
 
     with open(os.path.join(PROJECT_ROOT, "configs", "derived_config.yaml")) as f:
         config = yaml.safe_load(f)
+
+    enable_validation = config.get("enable_validation", False)
+
+    if enable_validation:
+        print("Running validation layer...")
+        validate_dataset(df, config)
+    else:
+        print("Validation skipped.")
+
 
     df, reports = apply_derived_variables(df, config)
 
