@@ -32,7 +32,14 @@ def apply_derived_variables(df, config):
         if not agg_func:
             raise ValueError(f"Unsupported aggregation: {aggregation}")
 
-        result = agg_func(working_df)
+        if aggregation == "weighted_mean":
+            weights = var_cfg.get("weights")
+            if not weights:
+                raise ValueError(f"Weights required for weighted_mean in {name}")
+            result = agg_func(working_df, weights=weights)
+        else:
+            result = agg_func(working_df)
+
 
         # Apply fallback
         fallback_func = FALLBACK_REGISTRY.get(fallback_strategy)
