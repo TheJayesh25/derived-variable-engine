@@ -50,6 +50,7 @@ def validate_config(df, config):
 
 
 def apply_derived_variables(df, config):
+    validate_config(df, config)
     reports = []
 
     for var_cfg in config["derived_variables"]:
@@ -57,6 +58,8 @@ def apply_derived_variables(df, config):
         source_cols = var_cfg["source_columns"]
         aggregation = var_cfg["aggregation"]
         special_codes = set(var_cfg.get("special_codes", []))
+        special_codes = set(float(code) for code in special_codes)
+
         fallback_strategy = var_cfg.get("fallback_strategy", "nan_if_no_valid")
 
         # Validate
