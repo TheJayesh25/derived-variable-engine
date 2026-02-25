@@ -6,6 +6,10 @@ derived_variables:
       - q100_2
       - q100_3
       - q100_4
+      - q100_5
+      - q100_6
+      - q100_7
+      - q100_8
     aggregation: mean
     special_codes: [-98, -99]
     fallback_strategy: propagate_special
@@ -17,6 +21,19 @@ derived_variables:
       - q200_1
       - q200_2
       - q200_3
-    aggregation: sum
-    special_codes: [-98, -99]
+      - q200_4
+      - q200_5
+    aggregation: mean
+    special_codes: [-98]
     fallback_strategy: nan_if_no_valid
+
+  - name: NPS_COMPOSITE
+    label: NPS Composite
+    source_columns:
+      - q300_1
+      - q300_2
+      - q300_3
+    aggregation: mean
+    special_codes: [-99]
+    fallback_strategy: propagate_special
+    multi_special_fallback: -99
