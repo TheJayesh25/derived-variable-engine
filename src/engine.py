@@ -3,6 +3,51 @@ import numpy as np
 from aggregations import AGGREGATION_REGISTRY
 from fallback import FALLBACK_REGISTRY
 
+def validate_config(df, config):
+    seen_names = set()
+
+    for var_cfg in config["derived_variables"]:
+        name = var_cfg["name"]
+        source_cols = var_cfg["source_columns"]
+        aggregation = var_cfg["aggregation"]
+
+        # Duplicate derived variable names
+        if name in seen_names:
+            raise ValueError(f"Duplicate derived variable name detected: {name}")
+        seen_names.add(name)
+
+        # Prevent overwriting existing columns
+        if name in df.columns:
+            raise ValueError(f"Derived variable '{name}' already exists in dataset.")
+
+        # Source columns exist
+        missing = [c for c in source_cols if c not in df.columns]
+        if missing:
+            raise ValueError(f"Missing source columns for {name}: {missing}")
+
+        # Duplicate source columns
+        if len(set(source_cols)) != len(source_cols):
+            raise ValueError(f"Duplicate source columns defined in {name}")
+
+        # Aggregation supported
+        if aggregation not in AGGREGATION_REGISTRY:
+            raise ValueError(f"Unsupported aggregation '{aggregation}' in {name}")
+
+        # Weighted mean validation
+        if aggregation == "weighted_mean":
+            weights = var_cfg.get("weights")
+            if not weights:
+                raise ValueError(f"Weights required for weighted_mean in {name}")
+            if len(weights) != len(source_cols):
+                raise ValueError(
+                    f"Weights length must match source_columns length in {name}"
+                )
+
+        # Special codes validation
+        special_codes = var_cfg.get("special_codes", [])
+        if not isinstance(special_codes, list):
+            raise ValueError(f"special_codes must be a list in {name}")
+
 
 def apply_derived_variables(df, config):
     reports = []
