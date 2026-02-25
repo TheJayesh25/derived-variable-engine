@@ -1,0 +1,22 @@
+derived_variables:
+  - name: SATIS
+    label: Satisfaction Index
+    source_columns:
+      - q100_1
+      - q100_2
+      - q100_3
+      - q100_4
+    aggregation: mean
+    special_codes: [-98, -99]
+    fallback_strategy: propagate_special
+    multi_special_fallback: -98
+
+  - name: LOYALTY
+    label: Loyalty Score
+    source_columns:
+      - q200_1
+      - q200_2
+      - q200_3
+    aggregation: sum
+    special_codes: [-98, -99]
+    fallback_strategy: nan_if_no_valid
