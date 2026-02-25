@@ -1,4 +1,10 @@
+enable_validation: true
+
 derived_variables:
+
+  # -----------------------------
+  # Satisfaction Index (1–5 scale)
+  # -----------------------------
   - name: SATIS
     label: Satisfaction Index
     source_columns:
@@ -14,7 +20,13 @@ derived_variables:
     special_codes: [-98, -99]
     fallback_strategy: propagate_special
     multi_special_fallback: -98
+    scale_min: 1
+    scale_max: 5
+    min_valid_ratio: 0.5
 
+  # -----------------------------
+  # Loyalty Score (1–7 scale)
+  # -----------------------------
   - name: LOYALTY
     label: Loyalty Score
     source_columns:
@@ -26,7 +38,13 @@ derived_variables:
     aggregation: mean
     special_codes: [-98]
     fallback_strategy: nan_if_no_valid
+    scale_min: 1
+    scale_max: 7
+    min_valid_ratio: 0.6
 
+  # -----------------------------
+  # NPS Composite (0–10 scale)
+  # -----------------------------
   - name: NPS_COMPOSITE
     label: NPS Composite
     source_columns:
@@ -37,3 +55,38 @@ derived_variables:
     special_codes: [-99]
     fallback_strategy: propagate_special
     multi_special_fallback: -99
+    scale_min: 0
+    scale_max: 10
+    min_valid_ratio: 0.5
+
+  # -----------------------------
+  # Simple Sum Example
+  # -----------------------------
+  - name: SATIS_SUM
+    label: Satisfaction Total Score
+    source_columns:
+      - q100_1
+      - q100_2
+      - q100_3
+      - q100_4
+    aggregation: sum
+    special_codes: [-98, -99]
+    fallback_strategy: nan_if_no_valid
+    scale_min: 1
+    scale_max: 5
+
+  # -----------------------------
+  # Weighted Mean Example
+  # -----------------------------
+  - name: WEIGHTED_SATIS
+    label: Weighted Satisfaction Index
+    source_columns:
+      - q100_1
+      - q100_2
+      - q100_3
+    aggregation: weighted_mean
+    weights: [0.5, 0.3, 0.2]
+    special_codes: [-98, -99]
+    fallback_strategy: nan_if_no_valid
+    scale_min: 1
+    scale_max: 5
