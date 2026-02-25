@@ -25,22 +25,24 @@ def validate_dataset(df, config):
         scale_max = var_cfg.get("scale_max")
 
         if scale_min is not None and scale_max is not None:
-            special_codes = set(var_cfg.get("special_codes", []))
 
             subset = df[source_cols]
 
-            invalid_mask = (
-                (subset < scale_min) | (subset > scale_max)
-            )
+            special_codes = set(float(code) for code in var_cfg.get("special_codes", []))
 
-            if special_codes:
-                for code in special_codes:
-                    invalid_mask &= (subset != code)
+            # Identify valid values (excluding special codes)
+            non_special_mask = ~subset.isin(special_codes)
+
+            invalid_mask = (
+                ((subset < scale_min) | (subset > scale_max))
+                & non_special_mask
+            )
 
             if invalid_mask.any().any():
                 raise ValueError(
                     f"Scale violation detected in '{name}'. "
                     f"Values outside [{scale_min}, {scale_max}] found."
                 )
+
 
     print("Validation completed successfully.")
