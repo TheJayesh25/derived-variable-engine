@@ -73,7 +73,17 @@ def apply_derived_variables(df, config):
         working_df = original_subset.replace(list(special_codes), np.nan)
 
         # Determine valid rows
-        valid_mask = working_df.notna().any(axis=1)
+        # Count valid (non-NaN) values
+        valid_counts = working_df.notna().sum(axis=1)
+
+        min_valid_ratio = var_cfg.get("min_valid_ratio")
+
+        if min_valid_ratio is not None:
+            required = int(len(source_cols) * min_valid_ratio)
+            valid_mask = valid_counts >= required
+        else:
+            # Default behavior: at least one valid
+            valid_mask = valid_counts > 0
 
         # Aggregate
         agg_func = AGGREGATION_REGISTRY.get(aggregation)
