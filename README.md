@@ -244,7 +244,7 @@ Inside the engine:
 - Enforces min_valid_ratio
 - Determines whether fallback applies
 
-Does not stop execution — controls derived output behavior.
+Does not stop execution - controls derived output behavior.
 
 
 ---
